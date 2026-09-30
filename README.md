@@ -15,7 +15,7 @@ Usar query database.sql que se encuentra en apiprueba (Para usar sqlite hay que 
 Para instalar sqlite acceder a:
 
 ```
-https://www.sqlite.org/download.html?utm_source=chatgpt.com
+https://www.sqlite.org/download.html
 ```
 
 ## Ejecutar
