@@ -9,46 +9,25 @@ Requisitos: .NET SDK 10, SQLite (comando sqlite3 disponible en PATH) y Git.
 
 ## Crear la base de datos
 
-En PowerShell, desde la carpeta que contiene ambos proyectos:
+Usar query database.sql que se encuentra en apiprueba (Para usar sqlite hay que instalarlo y colocar la direccion de la base de datos en "C:\sqlite\prueba.db")
 
-```powershell
-cd "C:\Users\Joaquin\Desktop\ITES\prueba"
-New-Item -ItemType Directory -Force "C:\sqlite"
-sqlite3 "C:/sqlite/prueba.db" ".read apiprueba/database.sql"
+
+Para instalar sqlite acceder a:
+
 ```
-
-Ejecutar el script SQL una sola vez, sobre una base nueva. Crea las tablas usuario y login_log. La API ya está configurada para usar C:\sqlite\prueba.db.
+https://www.sqlite.org/download.html?utm_source=chatgpt.com
+```
 
 ## Ejecutar
 
-Desde la carpeta prueba, iniciar la API:
+Iniciar primero el proyecto apiprueba y luego el proyecto avalonia
+
+Si los quieren iniciar desde la carpeta base (la que contiene ambos proyectos, pueden usar dotnet run y especificar la carpeta de cada proyecto)
 
 ```powershell
-dotnet run --project .\apiprueba\apiprueba.csproj --launch-profile http
+dotnet run --project .\apiprueba\apiprueba.csproj
 ```
-
-En otra terminal, desde la misma carpeta, iniciar Avalonia:
 
 ```powershell
 dotnet run --project .\avaloniaprueba\avaloniaprueba.csproj
 ```
-
-La API se ejecuta en Development en http://localhost:5197. Crear una cuenta desde Registrarme y luego iniciar sesión para ver los logs. Cerrar sesión vuelve al login.
-
-## Subir ambos proyectos a GitHub
-
-Crear en GitHub un repositorio vacío llamado prueba, sin README, licencia ni .gitignore. Reemplazar TU_USUARIO en el comando por tu usuario de GitHub.
-
-Desde PowerShell:
-
-```powershell
-cd "C:\Users\Joaquin\Desktop\ITES\prueba"
-git init
-git add .
-git commit -m "Agregar API y aplicacion Avalonia"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/prueba.git
-git push -u origin main
-```
-
-Git solicitará autenticación si hace falta. Ambos proyectos quedan dentro del mismo repositorio. El .gitignore excluye compilados, archivos del IDE y bases de datos locales.
