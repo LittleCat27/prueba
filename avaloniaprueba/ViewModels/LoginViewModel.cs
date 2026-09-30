@@ -42,7 +42,7 @@ public partial class LoginViewModel(ApiClient apiClient, Action showRegister, Fu
             Password = "";
             await showLogs();
         }
-        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or JsonException)
+        catch (Exception exception)
         {
             StatusMessage = AuthErrors.GetMessage(exception);
         }

@@ -1,127 +1,114 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace avaloniaprueba.Services;
 
-public sealed class ApiClient
+public class ApiClient
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly HttpClient _httpClient;
 
     public ApiClient()
     {
-        var address = Environment.GetEnvironmentVariable("AVALONIAPRUEBA_API_URL") ?? "http://localhost:5197/";
-        _httpClient = new HttpClient { BaseAddress = new Uri(address.TrimEnd('/') + "/", UriKind.Absolute), Timeout = TimeSpan.FromSeconds(15) };
+        var address = "http://localhost:5197/";
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(address.TrimEnd('/') + "/");
+        _httpClient.Timeout = TimeSpan.FromSeconds(15);
     }
 
-    public async Task<AuthResponse> LoginAsync(string username, string password, CancellationToken cancellationToken = default)
+    public async Task<AuthResponse> LoginAsync(string username, string password)
     {
         using var response = await _httpClient.PostAsJsonAsync(
             "api/auth/login",
-            new AuthRequest { Username = username, Password = password },
-            JsonOptions,
-            cancellationToken);
+            new AuthRequest { Username = username, Password = password });
 
-        return await ReadResponseAsync<AuthResponse>(response, cancellationToken);
+        // Si la API devuelve un error HTTP, se lanza una excepción.
+        response.EnsureSuccessStatusCode();
+
+        // Convertimos el JSON recibido en un objeto de C#.
+        var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        if (result == null)
+        {
+            throw new HttpRequestException("La API devolvió una respuesta vacía.");
+        }
+
+        return result;
     }
 
-    public async Task<AuthResponse> RegisterAsync(string username, string mail, string password, CancellationToken cancellationToken = default)
+    public async Task<AuthResponse> RegisterAsync(string username, string mail, string password)
     {
         using var response = await _httpClient.PostAsJsonAsync(
             "api/auth/register",
-            new RegisterRequest { Username = username, Mail = mail, Password = password },
-            JsonOptions,
-            cancellationToken);
+            new RegisterRequest { Username = username, Mail = mail, Password = password });
 
-        return await ReadResponseAsync<AuthResponse>(response, cancellationToken);
+        // Si la API devuelve un error HTTP, se lanza una excepción.
+        response.EnsureSuccessStatusCode();
+
+        // Convertimos el JSON recibido en un objeto de C#.
+        var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        if (result == null)
+        {
+            throw new HttpRequestException("La API devolvió una respuesta vacía.");
+        }
+
+        return result;
     }
 
-    public async Task<LoginLogPage> GetLoginLogsAsync(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+    public async Task<LoginLogPage> GetLoginLogsAsync(int page = 1, int pageSize = 20)
     {
         using var response = await _httpClient.GetAsync(
-            $"api/logs?page={page}&pageSize={pageSize}",
-            cancellationToken);
+            $"api/logs?page={page}&pageSize={pageSize}");
 
-        return await ReadResponseAsync<LoginLogPage>(response, cancellationToken);
-    }
+        // Si la API devuelve un error HTTP, se lanza una excepción.
+        response.EnsureSuccessStatusCode();
 
-    private static async Task<T> ReadResponseAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        if (!response.IsSuccessStatusCode)
+        // Convertimos el JSON recibido en un objeto de C#.
+        var result = await response.Content.ReadFromJsonAsync<LoginLogPage>();
+        if (result == null)
         {
-            var body = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new HttpRequestException(GetErrorMessage(body, response), null, response.StatusCode);
+            throw new HttpRequestException("La API devolvió una respuesta vacía.");
         }
 
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new HttpRequestException("La API devolvió una respuesta vacía.");
+        return result;
     }
 
-    private static string GetErrorMessage(string body, HttpResponseMessage response)
-    {
-        try
-        {
-            using var document = JsonDocument.Parse(body);
-            var root = document.RootElement;
-
-            if (root.TryGetProperty("message", out var message))
-                return message.GetString() ?? "La solicitud no pudo completarse.";
-
-
-            if (root.TryGetProperty("errors", out var errors))
-            {
-                var details = errors.EnumerateObject()
-                    .SelectMany(error => error.Value.EnumerateArray().Select(item => item.GetString()))
-                    .Where(detail => !string.IsNullOrWhiteSpace(detail));
-                var errorText = string.Join(" ", details);
-                if (!string.IsNullOrWhiteSpace(errorText))
-                    return errorText;
-            }
-        }
-        catch (JsonException)
-        {
-        }
-
-        return $"La API respondió con el estado {(int)response.StatusCode} ({response.ReasonPhrase}).";
-    }
 }
 
+// Clases que representan los datos enviados y recibidos de la API.
 public class AuthRequest
 {
-    public string Username { get; init; } = "";
-    public string Password { get; init; } = "";
+    public string Username { get; set; } = "";
+    public string Password { get; set; } = "";
 }
 
-public sealed class RegisterRequest : AuthRequest
+public class RegisterRequest
 {
-    public string Mail { get; init; } = "";
+    public string Username { get; set; } = "";
+    public string Password { get; set; } = "";
+    public string Mail { get; set; } = "";
 }
 
-public sealed class AuthResponse
+public class AuthResponse
 {
-    public int Id { get; init; }
-    public string Username { get; init; } = "";
-    public string Mail { get; init; } = "";
+    public int Id { get; set; }
+    public string Username { get; set; } = "";
+    public string Mail { get; set; } = "";
 }
 
-public sealed class LoginLogPage
+public class LoginLogPage
 {
-    public int Page { get; init; }
-    public int PageSize { get; init; }
-    public int Total { get; init; }
-    public List<LoginLogItem> Items { get; init; } = [];
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public int Total { get; set; }
+    public List<LoginLogItem> Items { get; set; } = new List<LoginLogItem>();
 }
 
-public sealed class LoginLogItem
+public class LoginLogItem
 {
-    public int Id { get; init; }
-    public int? UsuarioId { get; init; }
-    public DateTime? Fecha { get; init; }
-    public bool? Success { get; init; }
+    public int Id { get; set; }
+    public int? UsuarioId { get; set; }
+    public DateTime? Fecha { get; set; }
+    public bool? Success { get; set; }
 }

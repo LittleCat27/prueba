@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using avaloniaprueba.Services;
-
+using System.Text.RegularExpressions;
 namespace avaloniaprueba.ViewModels;
 
 public partial class RegisterViewModel(ApiClient apiClient, Action showLogin) : ViewModelBase
@@ -35,7 +35,7 @@ public partial class RegisterViewModel(ApiClient apiClient, Action showLogin) : 
             return;
         }
         if (string.IsNullOrWhiteSpace(Mail) || Mail.Trim().Length > 255 ||
-            !new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(Mail.Trim()))
+            !Regex.IsMatch(Mail.Trim(), @"^[\w\.]+@[\w\.]+\.\w+$") ) //Regex simple para validar un correo electrónico
         {
             StatusMessage = "Ingresá un correo electrónico válido de hasta 255 caracteres.";
             return;
