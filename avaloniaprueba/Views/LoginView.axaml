@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:vm="using:avaloniaprueba.ViewModels" x:Class="avaloniaprueba.Views.LoginView" x:DataType="vm:LoginViewModel">
+ <StackPanel Margin="0,16" Spacing="8" MaxWidth="380">
+  <TextBlock Text="Iniciar sesión" FontSize="24" />
+  <TextBlock Text="Usuario" />
+  <TextBox Text="{Binding Username, Mode=TwoWay}" />
+  <TextBlock Text="Contraseña" />
+  <TextBox Text="{Binding Password, Mode=TwoWay}" PasswordChar="*" />
+  <Button Content="Iniciar sesión" Command="{Binding LoginCommand}" />
+  <Button Content="Registrarme" Command="{Binding ShowRegisterCommand}" IsEnabled="{Binding !LoginCommand.IsRunning}" />
+  <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+ </StackPanel>
+</UserControl>

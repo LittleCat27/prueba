@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:vm="using:avaloniaprueba.ViewModels" x:Class="avaloniaprueba.Views.LogsView" x:DataType="vm:LogsViewModel">
+ <Grid Margin="0,16" RowDefinitions="Auto,Auto,Auto,*,Auto">
+  <TextBlock Text="Logs de login" FontSize="24" />
+  <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,12">
+   <Button Content="Cerrar sesión" Command="{Binding LogoutCommand}" />
+   <Button Content="Actualizar" Command="{Binding RefreshCommand}" />
+   <Button Content="Anterior" Command="{Binding PreviousCommand}" />
+   <Button Content="Siguiente" Command="{Binding NextCommand}" />
+  </StackPanel>
+  <Grid Grid.Row="2" ColumnDefinitions="60,120,*,100" Margin="4">
+   <TextBlock Text="ID" /><TextBlock Grid.Column="1" Text="Usuario ID" />
+   <TextBlock Grid.Column="2" Text="Fecha (local)" /><TextBlock Grid.Column="3" Text="Resultado" />
+  </Grid>
+  <ScrollViewer Grid.Row="3"><ItemsControl ItemsSource="{Binding Items}">
+   <ItemsControl.ItemTemplate>
+    <DataTemplate x:DataType="vm:LoginLogRow">
+     <Grid ColumnDefinitions="60,120,*,100">
+      <TextBlock Text="{Binding Id}" /><TextBlock Grid.Column="1" Text="{Binding UsuarioId}" />
+      <TextBlock Grid.Column="2" Text="{Binding Fecha}" /><TextBlock Grid.Column="3" Text="{Binding Resultado}" />
+     </Grid>
+    </DataTemplate>
+   </ItemsControl.ItemTemplate>
+  </ItemsControl></ScrollViewer>
+  <TextBlock Grid.Row="4" Text="{Binding StatusMessage}" TextWrapping="Wrap" Margin="0,8" />
+ </Grid>
+</UserControl>

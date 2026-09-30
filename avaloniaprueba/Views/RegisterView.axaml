@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:vm="using:avaloniaprueba.ViewModels" x:Class="avaloniaprueba.Views.RegisterView" x:DataType="vm:RegisterViewModel">
+ <StackPanel Margin="0,16" Spacing="8" MaxWidth="380">
+  <TextBlock Text="Crear cuenta" FontSize="24" />
+  <TextBlock Text="Usuario (3 a 100 caracteres)" />
+  <TextBox Text="{Binding Username, Mode=TwoWay}" />
+  <TextBlock Text="Correo electrónico" />
+  <TextBox Text="{Binding Mail, Mode=TwoWay}" />
+  <TextBlock Text="Contraseña (8 a 128 caracteres)" />
+  <TextBox Text="{Binding Password, Mode=TwoWay}" PasswordChar="*" />
+  <Button Content="Crear cuenta" Command="{Binding RegisterCommand}" />
+  <Button Content="Volver a login" Command="{Binding ShowLoginCommand}" IsEnabled="{Binding !RegisterCommand.IsRunning}" />
+  <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+ </StackPanel>
+</UserControl>

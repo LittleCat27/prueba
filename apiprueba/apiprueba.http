@@ -1,0 +1,29 @@
+@apiprueba_HostAddress = http://localhost:5197
+
+GET {{apiprueba_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+POST {{apiprueba_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "joaquin",
+  "mail": "joaquin@example.com",
+  "password": "Ejemplo123!"
+}
+
+### Login: valida las credenciales sin crear una sesión
+POST {{apiprueba_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "joaquin",
+  "password": "Ejemplo123!"
+}
+
+### Todos los logs (sin autenticación)
+GET {{apiprueba_HostAddress}}/api/logs?page=1&pageSize=20
+
+###
